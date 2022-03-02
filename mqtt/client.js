@@ -1,6 +1,7 @@
 const values = require('../models/values')
 const mqtt = require('mqtt')
 const { io } = require('../websocket/server')
+require('dotenv').config()
 
 const options = {
   // Clean session
@@ -13,8 +14,7 @@ const options = {
 }
 
 function StartMQTT() {
-  // const client = mqtt.connect('mqtt://212.24.50.42:1883', options)
-  const client = mqtt.connect('mqtt://212.24.50.42:1883', options)
+  const client = mqtt.connect(`mqtt://${process.env.MQTT_IP}:1883`, options)
 
   client.on('message', async function (topic, message) {
     // message is Buffer

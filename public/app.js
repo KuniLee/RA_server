@@ -1,5 +1,5 @@
 const instance = axios.create({
-  baseURL: 'http://212.24.50.42:3000/graphql',
+  baseURL: `http://${process.env.SERVER_IP}:3000/graphql`,
   timeout: 1000,
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
 })
