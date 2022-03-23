@@ -20,7 +20,7 @@ function StartMQTT() {
     // message is Buffer
     //client.end()
     const data = JSON.parse(message)
-    //console.log('topic: ' + topic, data)
+    //console.log('topic: ' + topic, data.timestamp)
     if (topic.includes('rec')) {
       try {
         await values.create({

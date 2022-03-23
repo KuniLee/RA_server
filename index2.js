@@ -1,3 +1,3 @@
-require('dotenv').config()
+const forReportQuery = require('./utils/forReportQuery')
 
-console.log(process.env.MY_IP)
+forReportQuery.endOfDate('reportType', 'date')

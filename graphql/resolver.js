@@ -1,18 +1,7 @@
 const values = require('../models/values')
 const { Op } = require('sequelize')
-
-const users = [
-  {
-    name: 'Igor',
-    age: 24,
-    email: 'igor@mail.ru',
-  },
-  {
-    name: 'Elena',
-    age: 56,
-    email: 'Elena@mail.ru',
-  },
-]
+const forReportQuery = require('../utils/forReportQuery')
+const sequelize = require('../utils/database')
 
 module.exports = {
   async downloadByTime(data) {
@@ -38,7 +27,9 @@ module.exports = {
   // },
   async getValues() {
     try {
-      return await values.findAll()
+      const data = await values.findAll()
+      console.log(data[0])
+      return data
     } catch (error) {
       throw new Error('Fetch todos is not available')
     }
@@ -54,35 +45,60 @@ module.exports = {
       throw new Error('Fetch todos is not available')
     }
   },
-  // async completeTodo({ id }) {
-  //   const todo = await Todo.findByPk(+id)
-  //   todo.done = true
-  //   await todo.save()
+  async report({ reportType, date, offsetInHours }) {
+    try {
+      const func = forReportQuery.function[reportType]
+      const data = await values.findAll({
+        attributes: [
+          [
+            sequelize.fn(
+              'ROUND',
+              sequelize.fn('AVG', sequelize.col('value')),
+              2
+            ),
+            'average',
+          ],
+          [
+            sequelize.fn(
+              `${func}`,
+              sequelize.fn(
+                'convert_tz',
+                sequelize.col('timestamp'),
+                '+00:00',
+                `${offsetInHours}`
+              )
+            ),
+            `${func}`,
+          ],
+          'parameter',
+        ],
+        where: sequelize.where(
+          sequelize.fn(
+            'convert_tz',
+            sequelize.col('timestamp'),
+            '+00:00',
+            `${offsetInHours}`
+          ),
+          {
+            [Op.between]: [
+              `${date} 00:00:00`,
+              `${forReportQuery.endOfDate(reportType, date)} 00:00:00`,
+            ],
+          }
+        ),
 
-  //   return todo
-  // },
-  // async removeTodo({ id }) {
-  //   try {
-  //     const todos = await Todo.findAll({
-  //       where: {
-  //         id: id,
-  //       },
-  //     })
-  //     await todos[0].destroy()
-  //     return true
-  //   } catch (error) {
-  //     throw new Error('Fetch todos is not available')
-  //     return false
-  //   }
-  // },
-  // async createNewValue({ todo: { title } }) {
-  //   try {
-  //     return await Todo.create({
-  //       title: title,
-  //       done: false,
-  //     })
-  //   } catch (error) {
-  //     throw new Error('Fetch todos is not available')
-  //   }
-  // },
+        group: [`${func}`, 'parameter'],
+        // order: [
+        //   'parameter',
+        //   sequelize.fn('minute', sequelize.col('timestamp')),
+        // ],
+        raw: true,
+      })
+
+      //console.log(forReportQuery.addDate(reportType, date, data))
+      return forReportQuery.addDate(reportType, date, data)
+    } catch (error) {
+      throw new Error(`Ошибка + ${error}`)
+    }
+  },
 }

@@ -2,19 +2,30 @@ const { buildSchema } = require('graphql')
 
 module.exports = buildSchema(`
 
+type MyType {
+   average: Float
+   hour: String
+   DAYOFMONTH: String
+   parameter: String
+   
+}
+
 type Value {
             id: ID!
             deviceId: ID!
             value: Float!
-            timestamp: Int!
+            timestamp: String!
             parameter: String!
-        createdAt: String
-        updatedAt: String
+        
+        
 }
+
+
 
 type Query {
     getValues: [Value!]!
     downloadByTime(timeStart:String!, timeEnd:String!):[Value!]!
+    report(reportType:String!, date:String!, offsetInHours:String!): [MyType]
 }
 
 
@@ -30,6 +41,4 @@ type Mutation {
     createValue(value:ValueInput!): Value!
 
 }
-
-
 `)
