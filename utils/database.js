@@ -1,5 +1,5 @@
 const { Sequelize } = require('sequelize')
-const DB_NAME = 'ra-server'
+const DB_NAME = 'RaServer'
 const USER_NAME = 'mysql'
 const PASSWORD = 'oHGIy703yg38hg3'
 require('dotenv').config()

@@ -20,7 +20,7 @@
     "mqtt": "^4.3.7",
     "sequelize": "^6.21.4",
     "socket.io": "^4.5.1",
-    "tedious": "^15.1.0"
+    "mysql2": "^2.3.3"
   },
   "devDependencies": {
     "nodemon": "^2.0.19"
